@@ -5,13 +5,11 @@ describe("auth tests", () => {
   const app = getApp();
 
   it("should register a new user", async () => {
-    const result = await request(app)
-      .post("/api/auth/register")
-      .send({
-        username: "test",
-        email: "test@example.com",
-        password: "123456",
-      });
+    const result = await request(app).post("/api/auth/register").send({
+      username: "test",
+      email: "test@example.com",
+      password: "123456",
+    });
 
     expect(result.status).toBe(201);
     expect(result.body.username).toBe("test");
@@ -20,13 +18,11 @@ describe("auth tests", () => {
   });
 
   it("should not register a user with existing email", async () => {
-    const result = await request(app)
-      .post("/api/auth/register")
-      .send({
-        username: "test",
-        email: "test@example.com",
-        password: "123456",
-      });
+    const result = await request(app).post("/api/auth/register").send({
+      username: "test",
+      email: "test@example.com",
+      password: "123456",
+    });
 
     expect(result.status).toBe(400);
     expect(result.body.message).toBe("The user email already exists");
@@ -52,5 +48,43 @@ describe("auth tests", () => {
     expect(result.body.errors).toContain(
       "Password must be at least 6 characters long"
     );
+  });
+
+  it("should log in a user", async () => {
+    const result = await request(app)
+      .post("/api/auth/login")
+      .send({ email: "test@example.com", password: "123456" });
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty("token");
+    expect(result.body).toHaveProperty("user");
+  });
+
+  it("should not log in a user with invalid password", async () => {
+    const result = await request(app)
+      .post("/api/auth/login")
+      .send({ email: "test@example.com", password: "1234567" });
+
+    expect(result.status).toBe(401);
+    expect(result.body.message).toBe("Invalid password");
+  });
+
+  it("should not log in a user with missing fields", async () => {
+    const result = await request(app)
+      .post("/api/auth/login")
+      .send({ email: "test@example.com" });
+
+    expect(result.status).toBe(400);
+    expect(result.body).toHaveProperty("errors");
+    expect(result.body.errors).toContain("Password is empty");
+  });
+
+  it("should not log in a user not registered", async () => {
+    const result = await request(app)
+      .post("/api/auth/login")
+      .send({ email: "ada@example.com", password: "123456" });
+
+    expect(result.status).toBe(401);
+    expect(result.body.message).toBe("User not found");
   });
 });

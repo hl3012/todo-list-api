@@ -31,3 +31,23 @@ export const validateRegister = (req: Request, res: Response, next: NextFunction
 
     next();
 }
+
+export const validateLogin = (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
+    const errors =[];
+
+    if (!password || password.trim().length === 0) {
+        errors.push("Password is empty");
+    }
+
+    //validate email
+    if (!email || email.trim().length === 0) {
+        errors.push("Email is empty");
+    }
+
+    if (errors.length > 0) {
+        return res.status(400).json({ errors });
+    }
+
+    next();
+}
