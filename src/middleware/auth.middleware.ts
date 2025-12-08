@@ -8,7 +8,7 @@ import { TodoUpdate } from "../models/todo.model";
 export interface MyRequest extends Request {
   /** ID of the anthenticated user, set after token verification*/
   userId?: string;
-  /** TodoUpdate information, set after validation for updating a todo */
+  /** Fields to update for a todo, set after validation */
   validatedData?: TodoUpdate;
 }
 

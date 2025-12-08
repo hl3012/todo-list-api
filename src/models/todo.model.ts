@@ -63,10 +63,11 @@ export class TodoModel {
   /**
    * Find all todos with optional filters
    * @param filters - optional filter criteria for title, description, category, completed, ownerId
-   * @returns Promise resolving to all todos that match the filters
+   * @returns Promise resolving to all todos that match the filters (empty array if none match)
    * @remarks
    * - All filters are optional; multiple filters can be combined;
-   * - Description filter performs a partial match and case insensitive; other filters are exact matches
+   * - Description filter performs a partial match and case-insensitive
+   * - Allother filters are exact matches if provided
    */
   static async findAllTodos(filters?: Filters): Promise<Todo[]> {
     let filteredTodos = this.todos;
@@ -116,7 +117,7 @@ export class TodoModel {
   /**
    * Update an existing todo item in memory
    * @param id - the id of the todo item to update
-   * @param updates - TodoUpdate partial object containing fields to update
+   * @param updates - TodoUpdate containing fields to update
    * @returns Promise resolving to the updated todo, otherwise null
    * @remarks If updates is empty, the todo item will not be updated
    */

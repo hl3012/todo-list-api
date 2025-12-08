@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   createTodo,
   deleteTodo,
-  getAllTodos,
+  searchTodos,
   updateTodo,
 } from "../controllers/todo.controller";
 import { protectedRoute } from "../middleware/auth.middleware";
@@ -10,8 +10,9 @@ import { validateCreateTodo, validateUpdateTodo } from "../middleware/validation
 
 const router = Router();
 
-//all users can create and search todos by filters
-router.get("/", protectedRoute, getAllTodos);
+//all registered users can create and search todos by optional filters
+//visitor can't access todos
+router.get("/", protectedRoute, searchTodos);
 router.post("/", protectedRoute, validateCreateTodo, createTodo);
 
 //only creater can update and delete

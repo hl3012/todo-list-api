@@ -2,10 +2,10 @@
 
 ## Background
 
-A simple todo API demonstrating CRUD operations, filtering, and access control
+A simple todo API demonstrating CRUD operations, filtering, and access control. 
 
-- All registered users can view all Todos, search by multiple criteria, and create new Todos.
-- Only the owner of a Todo can update or delete it.
+- Registered users can create todos, and all registered users can view all Todos, search by multiple criteria.
+- Only the owner of a Todo can update or delete it. Visitors(not logged in) cannot access todos.
 - Register and login endpoints are provided.
 
 ---

@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import authRoutes from "./routes/auth.route";
 import todoRoutes from "./routes/todo.route";
+import { errorHandler } from "./middleware/error.middleware";
 
 export const getApp = (): Express => {
   const app = express();
@@ -16,6 +17,9 @@ export const getApp = (): Express => {
 
   // todos
   app.use("/api/todos", todoRoutes);
+
+  // handle error
+  app.use(errorHandler);
 
   return app;
 };
