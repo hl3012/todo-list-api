@@ -48,7 +48,6 @@ export const validateCreateTodo = (
 
 /**
  * Middleware to validate todo update request body
- * @remarks
  * - Only allows updating title, description, category and completed
  * - Ensures that title, description and category are valid types
  * - Attachs ToDoUpdate object to req.validatedData
@@ -74,7 +73,7 @@ export const validateUpdateTodo = (
   if (extraKeys.length > 0) {
     return res
       .status(400)
-      .json({ error: `Extra fields in todo update: ${extraKeys.join(", ")}` });
+      .json({ error: `Extra fields to update todo: ${extraKeys.join(", ")}` });
   }
 
   for (const key of allowedKeys) {
@@ -108,7 +107,6 @@ export const validateUpdateTodo = (
 /**
  * Helper function to validate fields in a request body
  * @param fields - Array of field names and minimum length
- * @remarks
  * - Checks if fields are present and with valid types
  * - Supports minimum length checks for string fields
  */

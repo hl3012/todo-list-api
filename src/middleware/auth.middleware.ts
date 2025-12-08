@@ -13,10 +13,9 @@ export interface MyRequest extends Request {
 }
 
 /**
- * Middleware to protect routes by verifying JWT token
- * @remarks
+ * Middleware to authenticate by verifying JWT token
  * - Return 401 unauthorized if token is missing, invalid, expired or etc.
- * - Attach req.userId for use in subsequent route handlers
+ * - Attach req.userId for use in subsequent routes
  */
 export const protectedRoute = async (
   req: MyRequest,

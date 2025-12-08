@@ -20,7 +20,7 @@ interface MyPayLoad extends jwt.JwtPayload {
 
 /**
  * Verifies and returns the payload of a JWT token
- * @remarks casts the payload to MyPayLoad including userId
+ * - Casts the payload to MyPayLoad including userId
  */
 export const verifyToken = (token: string): MyPayLoad => {
   try {

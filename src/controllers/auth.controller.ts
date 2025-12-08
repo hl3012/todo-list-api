@@ -5,10 +5,9 @@ import { generateToken } from "../utils/jwt";
 
 /**
  * Controller to handle user registration
- * - Registers a new user with a unique email
+ * - Registers a new user with an unduplicated email
  * - Hashes the password before storing
  * - Validation of input is handled by middleware
- * @remarks
  * - Sensitive data like hashedPassword is never returned
  */
 export const register = async (
@@ -42,11 +41,9 @@ export const register = async (
 
 /**
  * Controller to handle user login
- * - Validates user credentials
+ * - Validates user email and password
  * - Generates JWT token if login is successful
- * @remarks
- * - Same error message is returned for security reasons
- * - Sensitive data like hashedPassword is never returned
+ * - Same error message is returned for security
  */
 export const login = async (
   req: Request,
@@ -58,7 +55,7 @@ export const login = async (
 
     const user = await UserModel.findUserByEmail(email);
 
-    //return same error message for security
+    //return same error message
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }

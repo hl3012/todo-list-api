@@ -9,7 +9,7 @@ import { TodoUpdate } from "../models/todo.model";
  * - Validation of input is handled by middleware
  * @remarks
  * - Only authenticated users can create a todo
- * - Authentication middleware ensures that req.userId is attached
+ * - Auth middleware ensures that req.userId is attached
  */
 export const createTodo = async (
   req: MyRequest,
@@ -41,7 +41,7 @@ export const createTodo = async (
  * - Deletes the todo item created by the authenticated user
  * @remarks
  * - Only authenticated user who created the todo can delete the todo
- * - Authentication middleware ensures that req.userId is attached for comparison
+ * - Auth middleware ensures that req.userId is attached for comparison
  */
 export const deleteTodo = async (
   req: MyRequest,
@@ -77,7 +77,7 @@ export const deleteTodo = async (
  * - Validation of input is handled by middleware
  * @remarks
  * - Only authenticated user who created the todo can update the todo
- * - Authentication middleware ensures that req.userId is attached for comparison
+ * - Auth middleware ensures that req.userId is attached for comparison
  */
 export const updateTodo = async (
   req: MyRequest,
@@ -115,11 +115,11 @@ export const updateTodo = async (
  * Controller to handle getting all todo items matching the optional filters
  * - All users can view todo items, visitors cannot
  * - Returns all todo items matching the optional filters
- * @param req - Custom express Request, may include
+ * @param req - Express Request, may include
  * - req.query: optional filter criteria for title, description, category, completed, ownerId
  * @return - 200 ok with an array of todo items matching the filters
  * @remarks
- * - Authentication middleware ensures there is a user logged in
+ * - Auth middleware ensures there is a user logged in
  * - Filters are optional, empty filters will return all todo items
  */
 export const searchTodos = async (

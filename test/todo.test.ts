@@ -16,29 +16,29 @@ beforeAll(async () => {
 
   app = getApp();
 
-  // Register 2 user
+  // Register 2 users
   await request(app).post("/api/auth/register").send({
     username: "ada",
-    email: "ada@example.com",
+    email: "ada@gmail.com",
     password: "123456",
   });
 
   await request(app).post("/api/auth/register").send({
     username: "yui",
-    email: "yui@example.com",
+    email: "yui@gmail.com",
     password: "123456",
   });
 
   // generate 2 tokens
   const login1 = await request(app).post("/api/auth/login").send({
-    email: "ada@example.com",
+    email: "ada@gmail.com",
     password: "123456",
   });
 
   token = login1.body.token;
 
   const login2 = await request(app).post("/api/auth/login").send({
-    email: "yui@example.com",
+    email: "yui@gmail.com",
     password: "123456",
   });
 
@@ -68,12 +68,12 @@ describe("POST /api/todos", () => {
     expect(result.body.message).toBe("Invalid token");
   });
 
-  it("should return 400 if fields are missing", async () => {
+  it("should return 400 if any fields are missing", async () => {
     const result = await request(app)
       .post("/api/todos")
       .set("Authorization", `Bearer ${token}`)
       .send({
-        title: "Only title",
+        title: "title",
       });
 
     expect(result.status).toBe(400);
@@ -85,9 +85,9 @@ describe("POST /api/todos", () => {
       .post("/api/todos")
       .set("Authorization", `Bearer ${token}`)
       .send({
-        title: "New Todo",
-        description: "Test description",
-        category: "Personal",
+        title: "Todo1",
+        description: "description1",
+        category: "work",
       });
 
     expect(result.status).toBe(201);
@@ -114,7 +114,7 @@ describe("PUT /api/todos/:id", () => {
       .put(`/api/todos/${createdTodoId}`)
       .set("Authorization", `Bearer ${otherToken}`)
       .send({
-        description: "Hacked",
+        description: "work",
       });
 
     expect(result.status).toBe(403);
@@ -123,17 +123,17 @@ describe("PUT /api/todos/:id", () => {
     );
   });
 
-  it("should return 400 if invalid fields are included", async () => {
+  it("should return 400 if invalid updating fields are included", async () => {
     const result = await request(app)
       .put(`/api/todos/${createdTodoId}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
-        title: "Updated title",
+        title: "title",
         invalidField: "abc",
       });
 
     expect(result.status).toBe(400);
-    expect(result.body.error).toBe("Extra fields in todo update: invalidField");
+    expect(result.body.error).toBe("Extra fields to update todo: invalidField");
   });
 
   it("should update todo successfully", async () => {
@@ -141,8 +141,8 @@ describe("PUT /api/todos/:id", () => {
       .put(`/api/todos/${createdTodoId}`)
       .set("Authorization", `Bearer ${token}`)
       .send({
-        title: "Updated Title",
-        description: "Updated description",
+        title: "Title",
+        description: "description",
       });
 
     expect(result.status).toBe(200);
