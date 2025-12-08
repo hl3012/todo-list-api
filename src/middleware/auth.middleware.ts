@@ -2,11 +2,22 @@ import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt";
 import { TodoUpdate } from "../models/todo.model";
 
+/**
+ * Extends the Request to include user-specific properties
+ */
 export interface MyRequest extends Request {
+  /** ID of the anthenticated user, set after token verification*/
   userId?: string;
+  /** TodoUpdate information, set after validation for updating a todo */
   validatedData?: TodoUpdate;
 }
 
+/**
+ * Middleware to protect routes by verifying JWT token
+ * @remarks
+ * - Return 401 unauthorized if token is missing, invalid, expired or etc.
+ * - Attach req.userId for use in subsequent route handlers
+ */
 export const protectedRoute = async (
   req: MyRequest,
   res: Response,

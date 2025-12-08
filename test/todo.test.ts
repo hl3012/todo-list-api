@@ -4,17 +4,19 @@ import { Express } from "express";
 import { UserModel } from "../src/models/user.model";
 import { TodoModel } from "../src/models/todo.model";
 
-let token: string;
-let otherToken: string;
-let createdTodoId: string;
-let filteredTodoId: string;
-let userId: string;
-const app: Express = getApp();
+let token: string; // JWT token for login1
+let otherToken: string; // JWT token for login2
+let createdTodoId: string; // ID of a created todo for deleting and updating
+let filteredTodoId: string; // ID of a todo for filtering use
+let app: Express;
 
 beforeAll(async () => {
   await TodoModel.reset();
   await UserModel.reset();
 
+  app = getApp();
+
+  // Register 2 user
   await request(app).post("/api/auth/register").send({
     username: "ada",
     email: "ada@example.com",
@@ -27,13 +29,13 @@ beforeAll(async () => {
     password: "123456",
   });
 
+  // generate 2 tokens
   const login1 = await request(app).post("/api/auth/login").send({
     email: "ada@example.com",
     password: "123456",
   });
 
   token = login1.body.token;
-  userId = login1.body.userId;
 
   const login2 = await request(app).post("/api/auth/login").send({
     email: "yui@example.com",

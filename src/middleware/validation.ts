@@ -2,6 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import { TodoUpdate } from "../models/todo.model";
 import { MyRequest } from "../middleware/auth.middleware";
 
+/**
+ * Middleware to validate user registration request body
+ * Checks if username, password and email are present and valid
+ */
 export const validateRegister = (
   req: Request,
   res: Response,
@@ -14,6 +18,10 @@ export const validateRegister = (
   ]);
 };
 
+/**
+ * Middleware to validate user login request body
+ * Checks if email and password are present and valid
+ */
 export const validateLogin = (
   req: Request,
   res: Response,
@@ -22,6 +30,10 @@ export const validateLogin = (
   validationFields(req, res, next, [{ name: "email" }, { name: "password" }]);
 };
 
+/**
+ * Middleware to validate todo creation request body
+ * Checks if title, description and category are present and valid
+ */
 export const validateCreateTodo = (
   req: Request,
   res: Response,
@@ -34,6 +46,13 @@ export const validateCreateTodo = (
   ]);
 };
 
+/**
+ * Middleware to validate todo update request body
+ * @remarks
+ * - Only allows updating title, description, category and completed
+ * - Ensures that title, description and category are valid types
+ * - Attachs ToDoUpdate object to req.validatedData
+ */
 export const validateUpdateTodo = (
   req: MyRequest,
   res: Response,
@@ -53,7 +72,9 @@ export const validateUpdateTodo = (
     (key) => !allowedKeys.includes(key as any)
   );
   if (extraKeys.length > 0) {
-    return res.status(400).json({error: `Extra fields in todo update: ${extraKeys.join(", ")}`});
+    return res
+      .status(400)
+      .json({ error: `Extra fields in todo update: ${extraKeys.join(", ")}` });
   }
 
   for (const key of allowedKeys) {
@@ -84,6 +105,13 @@ export const validateUpdateTodo = (
   next();
 };
 
+/**
+ * Helper function to validate fields in a request body
+ * @param fields - Array of field names and minimum length
+ * @remarks
+ * - Checks if fields are present and with valid types
+ * - Supports minimum length checks for string fields
+ */
 const validationFields = (
   req: Request,
   res: Response,

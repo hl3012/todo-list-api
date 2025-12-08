@@ -3,6 +3,14 @@ import bcrypt from "bcrypt";
 import { UserModel } from "../models/user.model";
 import { generateToken } from "../utils/jwt";
 
+/**
+ * Controller to handle user registration
+ * - Registers a new user with a unique email
+ * - Hashes the password before storing
+ * - Validation of input is handled by middleware
+ * @remarks
+ * - Sensitive data like hashedPassword is never returned
+ */
 export const register = async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
 
@@ -24,6 +32,14 @@ export const register = async (req: Request, res: Response) => {
   });
 };
 
+/**
+ * Controller to handle user login
+ * - Validates user credentials
+ * - Generates JWT token if login is successful
+ * @remarks
+ * - Same error message is returned for security reasons
+ * - Sensitive data like hashedPassword is never returned
+ */
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
