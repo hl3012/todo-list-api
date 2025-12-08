@@ -47,13 +47,13 @@ export const validateUpdateTodo = (
   ] as const;
   const body = req.body;
   const result: TodoUpdate = {};
-  const errors = [];
+  const errors: Record<string, string> = {};
 
   const extraKeys = Object.keys(body).filter(
     (key) => !allowedKeys.includes(key as any)
   );
   if (extraKeys.length > 0) {
-    errors.push(`Extra fields in todo update: ${extraKeys.join(", ")}`);
+    return res.status(400).json({error: `Extra fields in todo update: ${extraKeys.join(", ")}`});
   }
 
   for (const key of allowedKeys) {
@@ -62,13 +62,13 @@ export const validateUpdateTodo = (
 
       if (key === "completed") {
         if (typeof value !== "boolean") {
-          errors.push(`Invalid value for field ${key}`);
+          errors.completed = `Invalid value for field ${key}`;
         } else {
           result[key] = value;
         }
       } else {
         if (typeof value !== "string") {
-          errors.push(`Invalid value for field ${key}`);
+          errors[key] = `Invalid value for field ${key}`;
         } else {
           result[key] = value;
         }
@@ -76,7 +76,7 @@ export const validateUpdateTodo = (
     }
   }
 
-  if (errors.length > 0) {
+  if (Object.keys(errors).length > 0) {
     return res.status(400).json({ errors });
   }
 
@@ -84,7 +84,7 @@ export const validateUpdateTodo = (
   next();
 };
 
-export const validationFields = (
+const validationFields = (
   req: Request,
   res: Response,
   next: NextFunction,

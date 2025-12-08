@@ -12,6 +12,8 @@ let userId: string;
 const app: Express = getApp();
 
 beforeAll(async () => {
+  await TodoModel.reset();
+  await UserModel.reset();
 
   await request(app).post("/api/auth/register").send({
     username: "ada",
@@ -129,6 +131,7 @@ describe("PUT /api/todos/:id", () => {
       });
 
     expect(result.status).toBe(400);
+    expect(result.body.error).toBe("Extra fields in todo update: invalidField");
   });
 
   it("should update todo successfully", async () => {
@@ -177,7 +180,7 @@ describe("DELETE /api/todos/:id", () => {
 
 describe("GET /api/todos", () => {
   beforeAll(async () => {
-    TodoModel.reset();
+    await TodoModel.reset();
     await request(app)
       .post("/api/todos")
       .set("Authorization", `Bearer ${token}`)

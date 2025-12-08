@@ -11,7 +11,12 @@ export const createTodo = async (req: MyRequest, res: Response) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const todo = await TodoModel.create(ownerId, title, description, category);
+  const todo = await TodoModel.create({
+    ownerId,
+    title,
+    description,
+    category,
+  });
   return res.status(201).json(todo);
 };
 
@@ -19,40 +24,39 @@ export const deleteTodo = async (req: MyRequest, res: Response) => {
   const { id } = req.params;
   const ownerId = req.userId;
 
-  const todo = TodoModel.findById(id);
+  const todo = await TodoModel.findById(id);
   if (!todo) {
     return res.status(404).json({ message: "Todo not found" });
   }
 
   const todoOwnerId = todo.ownerId;
-  if (ownerId !== todoOwnerId)
+  if (ownerId !== todoOwnerId) {
     return res
       .status(403)
       .json({ message: "Unauthorized, only creator can delete todo" });
+  }
 
   await TodoModel.delete(id);
-
   return res.status(204).send();
 };
 
 export const updateTodo = async (req: MyRequest, res: Response) => {
   const { id } = req.params;
-  const todo = TodoModel.findById(id);
+  const ownerId = req.userId;
+
+  const todo = await TodoModel.findById(id);
   if (!todo) {
     return res.status(404).json({ message: "Todo not found" });
   }
 
-  const ownerId = req.userId;
-  const updates: TodoUpdate = req.validatedData as TodoUpdate;
-
   const todoOwnerId = todo.ownerId;
-
   if (ownerId !== todoOwnerId) {
     return res
       .status(403)
       .json({ message: "Unauthorized, only creator can update todo" });
   }
 
+  const updates: TodoUpdate = req.validatedData as TodoUpdate;
   await TodoModel.update(id, updates);
 
   return res.status(200).json({
@@ -60,7 +64,7 @@ export const updateTodo = async (req: MyRequest, res: Response) => {
   });
 };
 
-export const getAllTodos = (req: Request, res: Response) => {
+export const getAllTodos = async (req: MyRequest, res: Response) => {
   const completedParam = req.query.completed;
   const filters: Filters = {
     description: req.query.description?.toString(),
@@ -76,5 +80,6 @@ export const getAllTodos = (req: Request, res: Response) => {
         : undefined,
     ownerId: req.query.ownerId?.toString(),
   };
-  return res.status(200).json(TodoModel.findAllTodos(filters));
+  const todos = await TodoModel.findAllTodos(filters);
+  return res.status(200).json(todos);
 };

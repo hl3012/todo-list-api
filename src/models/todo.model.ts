@@ -18,6 +18,13 @@ export interface TodoUpdate {
   completed?: boolean;
 }
 
+export interface TodoCreate {
+  ownerId: string;
+  title: string;
+  description: string;
+  category: string;
+}
+
 export interface Filters {
   title?: string;
   description?: string;
@@ -29,15 +36,15 @@ export interface Filters {
 export class TodoModel {
   private static todos: Todo[] = [];
 
-  static findById(id: string): Todo | null {
+  static async findById(id: string) {
     return this.todos.find((t) => t.id === id) || null;
   }
 
-  static findByOwnerId(ownerId: string): Todo | null {
+  static async findByOwnerId(ownerId: string) {
     return this.todos.find((t) => t.ownerId === ownerId) || null;
   }
 
-  static findAllTodos(filters?: Filters): Todo[] {
+  static async findAllTodos(filters?: Filters): Promise<Todo[]> {
     let filteredTodos = this.todos;
     if (filters) {
       if (filters.title)
@@ -65,18 +72,12 @@ export class TodoModel {
   }
 
   static async create(
-    ownerId: string,
-    title: string,
-    description: string,
-    category: string
+    data: TodoCreate
   ): Promise<Todo> {
     const newTodo: Todo = {
       id: uuidv4(),
-      title,
-      description,
-      category,
+     ...data,
       completed: false,
-      ownerId,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -86,7 +87,7 @@ export class TodoModel {
   }
 
   static async update(id: string, updates: TodoUpdate): Promise<Todo | null> {
-    const todo = this.findById(id);
+    const todo = await this.findById(id);
     if (!todo) return null;
 
     if (!updates || Object.keys(updates).length === 0) return todo;
@@ -104,7 +105,7 @@ export class TodoModel {
     return true;
   }
 
-  static reset() {
+  static async reset() {
     this.todos = [];
   }
 }

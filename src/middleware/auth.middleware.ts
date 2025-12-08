@@ -21,17 +21,15 @@ export const protectedRoute = async (
     }
 
     const token = authorizationHeader.split(" ")[1];
-
     if (!token) {
       return res.status(401).json({ message: "No token found" });
     }
 
     const payload = verifyToken(token);
-
     req.userId = payload.userId;
     next();
   } catch (error: any) {
-    // console.log("Error in protectedRoute middleware", error);
+    console.log("Error in protectedRoute middleware", error.message);
     return res.status(401).json({ message: error.message });
   }
 };
