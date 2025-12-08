@@ -12,9 +12,9 @@ describe("auth tests", () => {
     });
 
     expect(result.status).toBe(201);
-    expect(result.body.username).toBe("test");
-    expect(result.body.email).toBe("test@example.com");
-    expect(result.body).not.toHaveProperty("hashedPassword");
+    expect(result.body.user.username).toBe("test");
+    expect(result.body.user.email).toBe("test@example.com");
+    expect(result.body.user).not.toHaveProperty("hashedPassword");
   });
 
   it("should not register a user with existing email", async () => {
@@ -25,7 +25,7 @@ describe("auth tests", () => {
     });
 
     expect(result.status).toBe(400);
-    expect(result.body.message).toBe("The user email already exists");
+    expect(result.body.message).toBe("Email is already registered");
   });
 
   it("should not register a user with missing fields", async () => {
@@ -35,7 +35,7 @@ describe("auth tests", () => {
 
     expect(result.status).toBe(400);
     expect(result.body).toHaveProperty("errors");
-    expect(result.body.errors).toContain("Username is empty");
+    expect(result.body.errors.username).toBe("username is empty");
   });
 
   it("should not register a user with invalid password", async () => {
@@ -45,8 +45,8 @@ describe("auth tests", () => {
 
     expect(result.status).toBe(400);
     expect(result.body).toHaveProperty("errors");
-    expect(result.body.errors).toContain(
-      "Password must be at least 6 characters long"
+    expect(result.body.errors.password).toBe(
+      "password must be at least 6 characters long"
     );
   });
 
@@ -66,7 +66,7 @@ describe("auth tests", () => {
       .send({ email: "test@example.com", password: "1234567" });
 
     expect(result.status).toBe(401);
-    expect(result.body.message).toBe("Invalid password");
+    expect(result.body.message).toBe("Invalid email or password");
   });
 
   it("should not log in a user with missing fields", async () => {
@@ -76,7 +76,7 @@ describe("auth tests", () => {
 
     expect(result.status).toBe(400);
     expect(result.body).toHaveProperty("errors");
-    expect(result.body.errors).toContain("Password is empty");
+    expect(result.body.errors.password).toBe("password is empty");
   });
 
   it("should not log in a user not registered", async () => {
@@ -85,6 +85,6 @@ describe("auth tests", () => {
       .send({ email: "ada@example.com", password: "123456" });
 
     expect(result.status).toBe(401);
-    expect(result.body.message).toBe("User not found");
+    expect(result.body.message).toBe("Invalid email or password");
   });
 });

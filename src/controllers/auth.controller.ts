@@ -1,35 +1,42 @@
 import { Response, Request } from "express";
-import { UserModel } from "../models/user.model";
 import bcrypt from "bcrypt";
+import { UserModel } from "../models/user.model";
 import { generateToken } from "../utils/jwt";
 
 export const register = async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
-  const user = await UserModel.findUserByEmail(email);
 
+  const user = await UserModel.findUserByEmail(email);
   if (user) {
-    return res.status(400).json({ message: "The user email already exists" });
+    return res.status(400).json({ message: "Email is already registered" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-
   const newUser = await UserModel.createUser(username, email, hashedPassword);
+
+  // exclude sentive data
   return res.status(201).json({
-    id: newUser.userId,
-    username: newUser.username,
-    email: newUser.email,
+    user: {
+      id: newUser.userId,
+      username: newUser.username,
+      email: newUser.email,
+    },
   });
 };
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
+
   const user = await UserModel.findUserByEmail(email);
+
+  //return same error message for security
   if (!user) {
-    return res.status(401).json({ message: "User not found" });
+    return res.status(401).json({ message: "Invalid email or password" });
   }
+
   const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
   if (!isPasswordValid) {
-    return res.status(401).json({ message: "Invalid password" });
+    return res.status(401).json({ message: "Invalid email or password" });
   }
 
   const token = generateToken(user.userId);
@@ -43,9 +50,3 @@ export const login = async (req: Request, res: Response) => {
     },
   });
 };
-
-//test controller
-// export const getAllUsers = async (req: Request, res: Response) => {
-//     const users = await userModel.getAllUsers();
-//     return res.status(200).json(users);
-// }
