@@ -1,21 +1,21 @@
-import {Router} from "express";
+import { Router } from "express";
+import {
+  createTodo,
+  deleteTodo,
+  getAllTodos,
+  updateTodo,
+} from "../controllers/todo.controller";
+import { protectedRoute } from "../middleware/auth.middleware";
+import { validateCreateTodo, validateUpdateTodo } from "../utils/validation";
 
 const router = Router();
 
-router.get("/todos", (req, res) => {
-    res.json({message: "Get all todos"});
-})
+//public route
+router.get("/", getAllTodos);
 
-router.post("/", (req, res) => {
-    res.json({message: "Todo created successfully"});
-})
-
-router.delete("/:id", (req, res) => {
-    res.json({message: `Get todo by id ${req.params.id}`});
-})
-
-router.put("/:id", (req, res) => {
-    res.json({message: `Update todo by id ${req.params.id}`});
-})
+//only user can access
+router.post("/", protectedRoute, validateCreateTodo, createTodo);
+router.delete("/:id", protectedRoute, deleteTodo);
+router.put("/:id", protectedRoute, validateUpdateTodo, updateTodo);
 
 export default router;

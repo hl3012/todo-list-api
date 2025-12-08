@@ -1,4 +1,4 @@
-export interface User {
+interface User {
   userId: string;
   username: string;
   email: string;
@@ -7,7 +7,7 @@ export interface User {
 }
 
 //all used async to simulate the database req
-export class userModel {
+export class UserModel {
   private static users: User[] = [];
 
   static async findUserByEmail(email: string) {
@@ -42,6 +42,8 @@ export class userModel {
     this.users.push(newUser);
     return newUser;
   }
-}
 
-export default userModel;
+  static reset() {
+    this.users = [];
+  }
+}

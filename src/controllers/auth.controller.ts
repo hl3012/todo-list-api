@@ -1,11 +1,11 @@
 import { Response, Request } from "express";
-import userModel from "../models/user.model";
+import { UserModel } from "../models/user.model";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/jwt";
 
 export const register = async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
-  const user = await userModel.findUserByEmail(email);
+  const user = await UserModel.findUserByEmail(email);
 
   if (user) {
     return res.status(400).json({ message: "The user email already exists" });
@@ -13,7 +13,7 @@ export const register = async (req: Request, res: Response) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = await userModel.createUser(username, email, hashedPassword);
+  const newUser = await UserModel.createUser(username, email, hashedPassword);
   return res.status(201).json({
     id: newUser.userId,
     username: newUser.username,
@@ -23,7 +23,7 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const user = await userModel.findUserByEmail(email);
+  const user = await UserModel.findUserByEmail(email);
   if (!user) {
     return res.status(401).json({ message: "User not found" });
   }
