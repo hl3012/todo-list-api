@@ -12,8 +12,6 @@ let userId: string;
 const app: Express = getApp();
 
 beforeAll(async () => {
-  UserModel.reset();
-  TodoModel.reset();
 
   await request(app).post("/api/auth/register").send({
     username: "ada",
@@ -75,6 +73,7 @@ describe("POST /api/todos", () => {
       });
 
     expect(result.status).toBe(400);
+    expect(result.body.errors.description).toBe("description is empty");
   });
 
   it("should create a todo successfully", async () => {
@@ -216,14 +215,25 @@ describe("GET /api/todos", () => {
   });
 
   it("should get todos", async () => {
-    const response = await request(app).get("/api/todos");
+    const response = await request(app)
+      .get("/api/todos")
+      .set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(3);
   });
 
+  it("should not get todos without login", async () => {
+    const response = await request(app).get("/api/todos");
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe("Invalid or no authentication header");
+  });
+
   it("should get todos filtered by category", async () => {
-    const response = await request(app).get("/api/todos?category=work");
+    const response = await request(app)
+      .get("/api/todos?category=work")
+      .set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(1);
@@ -231,7 +241,9 @@ describe("GET /api/todos", () => {
   });
 
   it("should get todos filtered by title", async () => {
-    const response = await request(app).get("/api/todos?title=Todo 1");
+    const response = await request(app)
+      .get("/api/todos?title=Todo 1")
+      .set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(1);
@@ -239,7 +251,9 @@ describe("GET /api/todos", () => {
   });
 
   it("should get todos filtered by description", async () => {
-    const response = await request(app).get("/api/todos?description=study");
+    const response = await request(app)
+      .get("/api/todos?description=study")
+      .set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(2);
@@ -248,7 +262,9 @@ describe("GET /api/todos", () => {
   });
 
   it("should get todos filtered by complete", async () => {
-    const response = await request(app).get("/api/todos?completed=true");
+    const response = await request(app)
+      .get("/api/todos?completed=true")
+      .set("Authorization", `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(1);
     expect(response.body[0].completed).toBe(true);
@@ -256,9 +272,9 @@ describe("GET /api/todos", () => {
   });
 
   it("should get todos filtered by title and description", async () => {
-    const response = await request(app).get(
-      "/api/todos?title=Todo 3&description=study"
-    );
+    const response = await request(app)
+      .get("/api/todos?title=Todo 3&description=study")
+      .set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(1);

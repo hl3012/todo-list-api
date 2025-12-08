@@ -1,4 +1,6 @@
-interface User {
+import { v4 as uuidv4 } from "uuid";
+
+export interface User {
   userId: string;
   username: string;
   email: string;
@@ -6,26 +8,21 @@ interface User {
   createdAt: Date;
 }
 
-//all used async to simulate the database req
 export class UserModel {
+  // static array as in-memory database
   private static users: User[] = [];
 
   static async findUserByEmail(email: string) {
-    return this.users.find((user) => user.email === email);
+    return this.users.find((user) => user.email === email) || null;
   }
 
-  static async findUserById(userId: string) {
-    return this.users.find((user) => user.userId === userId);
+  static async findUserByUserId(userId: string) {
+    return this.users.find((user) => user.userId === userId) || null;
   }
 
   static async findUserByUsername(username: string) {
-    return this.users.find((user) => user.username === username);
+    return this.users.find((user) => user.username === username) || null;
   }
-
-  // //test
-  // static async getAllUsers() {
-  //     return this.users;
-  // }
 
   static async createUser(
     username: string,
@@ -33,8 +30,8 @@ export class UserModel {
     hashedPassword: string
   ): Promise<User> {
     const newUser: User = {
-      userId: Date.now().toString(),
-      username: username,
+      userId: uuidv4(),
+      username,
       email,
       hashedPassword,
       createdAt: new Date(),
@@ -43,7 +40,10 @@ export class UserModel {
     return newUser;
   }
 
-  static reset() {
+  /**
+   * Clear all users (testing use)
+   */
+  static async reset() {
     this.users = [];
   }
 }

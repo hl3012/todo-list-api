@@ -6,15 +6,15 @@ import {
   updateTodo,
 } from "../controllers/todo.controller";
 import { protectedRoute } from "../middleware/auth.middleware";
-import { validateCreateTodo, validateUpdateTodo } from "../utils/validation";
+import { validateCreateTodo, validateUpdateTodo } from "../middleware/validation";
 
 const router = Router();
 
-//public route
-router.get("/", getAllTodos);
-
-//only user can access
+//all users can create and search todos by filters
+router.get("/", protectedRoute, getAllTodos);
 router.post("/", protectedRoute, validateCreateTodo, createTodo);
+
+//only creater can update and delete
 router.delete("/:id", protectedRoute, deleteTodo);
 router.put("/:id", protectedRoute, validateUpdateTodo, updateTodo);
 

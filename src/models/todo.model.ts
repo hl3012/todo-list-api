@@ -1,4 +1,6 @@
-interface Todo {
+import { v4 as uuidv4 } from "uuid";
+
+export interface Todo {
   id: string;
   title: string;
   description: string;
@@ -69,7 +71,7 @@ export class TodoModel {
     category: string
   ): Promise<Todo> {
     const newTodo: Todo = {
-      id: Date.now().toString(),
+      id: uuidv4(),
       title,
       description,
       category,
